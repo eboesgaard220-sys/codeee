@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A focused AP U.S. History study dashboard.">
+    <title>APUSH instaStudy</title>
+    <style>
+        :root {
+            --navy: #102a43;
+            --blue: #2f6fed;
+            --ink: #243b53;
+            --muted: #627d98;
+            --cream: #f7f9fc;
+            --white: #ffffff;
+            --line: #e5ebf2;
+            --shadow: 0 18px 45px rgba(16, 42, 67, .10);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            background: var(--cream);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .page { max-width: 1120px; margin: auto; padding: 28px 24px 56px; }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 72px;
+        }
+
+        .logo { color: var(--navy); font-size: 1.15rem; font-weight: 800; letter-spacing: -.03em; }
+        .logo span { color: var(--blue); }
+
+        nav a { color: var(--muted); font-size: .9rem; font-weight: 600; text-decoration: none; margin-left: 28px; }
+        nav a:hover { color: var(--blue); }
+
+        .hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 64px; align-items: center; margin-bottom: 64px; }
+        .eyebrow { color: var(--blue); font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+        h1 { max-width: 650px; margin: 14px 0 20px; color: var(--navy); font-size: clamp(2.8rem, 7vw, 5.25rem); line-height: .98; letter-spacing: -.07em; }
+        h1 span { color: var(--blue); }
+        .intro { max-width: 500px; color: var(--muted); font-size: 1.08rem; line-height: 1.7; }
+        .button { display: inline-block; margin-top: 14px; padding: 14px 22px; border-radius: 10px; color: var(--white); background: var(--blue); box-shadow: 0 8px 18px rgba(47, 111, 237, .22); font-weight: 700; text-decoration: none; }
+        .button:hover { background: #245ccc; }
+
+        .study-card { padding: 28px; border: 1px solid var(--line); border-radius: 18px; background: var(--white); box-shadow: var(--shadow); }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .card-top strong { color: var(--navy); }
+        .status { padding: 6px 10px; border-radius: 99px; color: #19704a; background: #e7f7ef; font-size: .72rem; font-weight: 700; }
+        .progress { height: 8px; margin: 12px 0 24px; overflow: hidden; border-radius: 20px; background: #edf1f6; }
+        .progress div { width: 68%; height: 100%; border-radius: inherit; background: var(--blue); }
+        .stat-row { display: flex; justify-content: space-between; color: var(--muted); font-size: .85rem; }
+        .stat-row b { color: var(--navy); font-size: 1.2rem; }
+
+        .section-title { margin-bottom: 18px; color: var(--navy); font-size: 1.35rem; letter-spacing: -.03em; }
+        .topics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .topic { padding: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); text-decoration: none; transition: transform .2s, box-shadow .2s; }
+        .topic:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(16, 42, 67, .08); }
+        .topic-icon { font-size: 1.45rem; }
+        .topic h3 { margin: 14px 0 6px; color: var(--navy); font-size: 1rem; }
+        .topic p { margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.5; }
+        .chapter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .chapter { padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); }
+        .chapter a { color: var(--blue); font-weight: 800; text-decoration: none; }
+        .chapter small { display: block; margin: 8px 0; color: var(--muted); }
+        .chapter-page { display: none; margin-top: 42px; padding: 28px; border: 1px solid var(--line); border-radius: 18px; background: var(--white); box-shadow: var(--shadow); }
+        .chapter-page:target { display: block; }
+        .chapter-page h2 { color: var(--navy); margin-top: 0; }
+        .chapter-page p { line-height: 1.65; }
+        .chapter-page strong { color: var(--navy); }
+
+        .auth-screen { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 24px; background: linear-gradient(135deg, #eef4ff, var(--cream)); }
+        .auth-card { width: min(100%, 430px); padding: 32px; border: 1px solid var(--line); border-radius: 18px; background: var(--white); box-shadow: var(--shadow); }
+        .auth-card h1 { margin: 0 0 8px; font-size: 2rem; letter-spacing: -.05em; }
+        .auth-card p { color: var(--muted); line-height: 1.5; }
+        .auth-tabs { display: flex; gap: 8px; margin: 22px 0; }
+        .auth-tabs button, .auth-card button { border: 0; border-radius: 8px; padding: 11px 14px; cursor: pointer; font: inherit; font-weight: 700; }
+        .auth-tabs button { flex: 1; color: var(--muted); background: #edf1f6; }
+        .auth-tabs button.active, .auth-card button[type="submit"] { color: var(--white); background: var(--blue); }
+        .auth-card label { display: block; margin: 13px 0 6px; color: var(--navy); font-size: .85rem; font-weight: 700; }
+        .auth-card input { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; }
+        .auth-card button[type="submit"] { width: 100%; margin-top: 20px; }
+        .auth-error { min-height: 1.3em; margin: 12px 0 0 !important; color: #b42318 !important; font-size: .85rem; }
+        .logout { border: 0; color: var(--muted); background: transparent; font: inherit; font-size: .9rem; font-weight: 600; cursor: pointer; }
+
+        @media (max-width: 720px) {
+            header { margin-bottom: 48px; }
+            nav { display: none; }
+            .hero { grid-template-columns: 1fr; gap: 36px; }
+            .topics, .chapter-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <section class="auth-screen" id="auth-screen" aria-label="Login">
+        <form class="auth-card" id="auth-form">
+            <div class="logo">APUSH <span>instaStudy</span></div>
+            <h1>Welcome back.</h1>
+            <p>Log in or create an account to enter your study dashboard.</p>
+            <div class="auth-tabs" role="tablist">
+                <button type="button" class="active" data-mode="login">Log in</button>
+                <button type="button" data-mode="signup">Sign up</button>
+                <button type="button" data-mode="editor">Editor</button>
+            </div>
+            <label for="auth-username">Username</label>
+            <input id="auth-username" required autocomplete="username">
+            <label for="auth-password">Password</label>
+            <input id="auth-password" type="password" required autocomplete="current-password">
+            <p class="auth-error" id="auth-error" role="alert"></p>
+            <button type="submit" id="auth-submit">Log in</button>
+        </form>
+    </section>
+    <main class="page">
+        <header>
+            <div class="logo">APUSH <span>instaStudy</span></div>
+            <nav aria-label="Main navigation">
+                <a href="#topics">Topics</a>
+                <a href="#progress">My progress</a>
+                <button class="logout" id="logout" type="button">Log out</button>
+            </nav>
+        </header>
+
+        <section class="hero" aria-labelledby="welcome-heading">
+            <div>
+                <div class="eyebrow">Study smarter · remember more</div>
+                <h1 id="welcome-heading">Make history <span>stick.</span></h1>
+                <p class="intro">A simple, focused way to review AP U.S. History—one era, one idea, and one confident step at a time.</p>
+                <a class="button" href="#topics">Start studying &rarr;</a>
+            </div>
+
+            <aside class="study-card" id="progress" aria-label="Study progress">
+                <div class="card-top"><strong>Your progress</strong><span class="status">On track</span></div>
+                <small>APUSH review course</small>
+                <div class="progress" aria-label="68 percent complete"><div></div></div>
+                <div class="stat-row"><span><b>68%</b><br>completed</span><span><b>12</b><br>sessions</span><span><b>4</b><br>day streak</span></div>
+            </aside>
+        </section>
+
+        <section id="topics" aria-labelledby="topics-heading">
+            <h2 class="section-title" id="topics-heading">Choose a focus</h2>
+            <div class="topics">
+                <a class="topic" href="#"><span class="topic-icon">🗺️</span><h3>Periods & eras</h3><p>Build a clear timeline from 1491 to the present.</p></a>
+                <a class="topic" href="#"><span class="topic-icon">💡</span><h3>Key concepts</h3><p>Connect the people, ideas, and events that shaped America.</p></a>
+                <a class="topic" href="#"><span class="topic-icon">✍️</span><h3>Practice questions</h3><p>Test your knowledge with exam-style prompts.</p></a>
+            </div>
+        </section>
+
+        <section id="chapters" aria-labelledby="chapters-heading" style="margin-top:64px">
+            <h2 class="section-title" id="chapters-heading">American Pageant · 17th edition chapters</h2>
+            <div class="chapter-grid" id="chapter-grid"></div>
+        </section>
+
+        <div id="chapter-pages"></div>
+    </main>
+    <script>
+        const chapters = [
+            ['1','New World Beginnings','1491–1607','Indigenous civilizations; Columbian Exchange (1492); Spanish conquest; maize agriculture; encomienda and mercantilism.'],
+            ['2','The Planting of English America','1585–1752','Roanoke (1587); Jamestown (1607); John Smith; tobacco and John Rolfe (1612); House of Burgesses (1619); indentured servitude.'],
+            ['3','Settling the Northern Colonies','1620–1700','Pilgrims and Mayflower Compact (1620); Puritans and John Winthrop; Massachusetts Bay (1630); Anne Hutchinson; mercantilism and theocracy.'],
+            ['4','American Life in the Seventeenth Century','1607–1692','Bacon’s Rebellion (1676); slavery and racial codes; King Philip’s War (1675–76); colonial family, labor, and religion.'],
+            ['5','Colonial Society on the Eve of Revolution','1700–1775','Enlightenment; Great Awakening (1730s–40s); Benjamin Franklin; triangular trade; regional economies and pluralism.'],
+            ['6','Duel for North America','1689–1763','French and Indian War (1754–63); George Washington; Treaty of Paris (1763); imperial rivalry and salutary neglect.'],
+            ['7','The Road to Revolution','1763–1775','Stamp Act (1765); Boston Massacre (1770); Tea Act and Boston Tea Party (1773); Intolerable Acts (1774); republicanism.'],
+            ['8','America Secedes from the Empire','1775–1783','Lexington and Concord (1775); Declaration of Independence (1776); Saratoga (1777); Yorktown (1781); Treaty of Paris (1783).'],
+            ['9','The Confederation and the Constitution','1781–1789','Articles of Confederation; Northwest Ordinance (1787); Shays’s Rebellion; Constitutional Convention (1787); Federalists vs. Anti-Federalists.'],
+            ['10','Launching the New Ship of State','1789–1800','Washington; Hamilton’s financial plan; national bank; Whiskey Rebellion (1794); Jay’s Treaty; Federalism and emergent parties.'],
+            ['11','The Triumphs and Travails of the Jeffersonian Republic','1800–1812','Election of 1800; Louisiana Purchase (1803); Marbury v. Madison (1803); Lewis and Clark; Embargo Act (1807).'],
+            ['12','The Second War for Independence','1812–1824','War of 1812; Treaty of Ghent (1814); Andrew Jackson at New Orleans; Monroe Doctrine (1823); nationalism.'],
+            ['13','The Rise of a Mass Democracy','1824–1840','Election of 1824; Jacksonian democracy; Indian Removal Act (1830); Bank War; Trail of Tears (1838–39); populism.'],
+            ['14','Forging the National Economy','1815–1840','Market Revolution; Erie Canal (1825); canals, railroads, factories; Samuel Morse; cotton kingdom and wage labor.'],
+            ['15','The Ferment of Reform and Culture','1790s–1850s','Second Great Awakening; abolitionism; Seneca Falls (1848); Dorothea Dix; transcendentalism; utopian communities.'],
+            ['16','The South and the Slavery Controversy','1793–1860','Cotton gin (1793); Nat Turner (1831); Frederick Douglass; proslavery ideology; abolition and sectional conflict.'],
+            ['17','Manifest Destiny and Its Legacy','1840–1848','Texas annexation (1845); Mexican-American War (1846–48); Treaty of Guadalupe Hidalgo (1848); Manifest Destiny.'],
+            ['18','Renewing the Sectional Struggle','1848–1858','Compromise of 1850; Fugitive Slave Act; Kansas-Nebraska Act (1854); Bleeding Kansas; Dred Scott (1857).'],
+            ['19','Drifting Toward Disunion','1858–1861','Lincoln-Douglas debates; John Brown’s raid (1859); election of 1860; secession; Fort Sumter (1861).'],
+            ['20','Girding for War','1861–1862','Civil War begins; First Bull Run (1861); Antietam (1862); Emancipation Proclamation (Jan. 1, 1863); Union vs. Confederacy.'],
+            ['21','The Furnace of Civil War','1863–1865','Gettysburg and Vicksburg (1863); Gettysburg Address; Sherman’s March; Appomattox (Apr. 9, 1865); total war.'],
+            ['22','The Ordeal of Reconstruction','1865–1877','13th–15th Amendments; Freedmen’s Bureau; Black Codes; impeachment of Andrew Johnson; Compromise of 1877.'],
+            ['23','Political Paralysis in the Gilded Age','1869–1896','Gilded Age politics; Crédit Mobilier; Pendleton Act (1883); Populist Party; Plessy v. Ferguson (1896).'],
+            ['24','Industry Comes of Age','1865–1900','Carnegie and Rockefeller; railroads; Knights of Labor; Haymarket (1886); trusts, Social Darwinism, and labor conflict.'],
+            ['25','America Moves to the City','1865–1900','Urbanization; immigration; tenements; Jane Addams and Hull House (1889); settlement-house reform; consumer culture.'],
+            ['26','The Great West and the Agricultural Revolution','1865–1896','Homestead Act; transcontinental railroad (1869); Dawes Act (1887); Wounded Knee (1890); Populism and farmers’ protest.'],
+            ['27','Empire and Expansion','1890–1909','Spanish-American War (1898); Philippines; Platt Amendment; Open Door; Roosevelt Corollary (1904); imperialism.'],
+            ['28','Progressivism and the Republican Roosevelt','1901–1912','Theodore Roosevelt; muckrakers; Pure Food and Drug Act (1906); conservation; Square Deal; 16th Amendment (1913).'],
+            ['29','Wilsonian Progressivism at Home and Abroad','1912–1919','Woodrow Wilson; Federal Reserve Act (1913); WWI (1914–18); Fourteen Points; Treaty of Versailles; self-determination.'],
+            ['30','The War to End War','1917–1919','U.S. enters WWI (Apr. 6, 1917); selective service; Great Migration; Red Scare (1919); League of Nations debate.'],
+            ['31','American Life in the “Roaring Twenties”','1920–1929','18th Amendment and Prohibition; 19th Amendment (1920); Harlem Renaissance; Scopes Trial (1925); consumerism and nativism.'],
+            ['32','The Great Depression and the New Deal','1929–1939','Stock crash (Oct. 1929); FDR; New Deal (1933–39); Social Security Act (1935); labor rights; Keynesian reform.'],
+            ['33','Franklin D. Roosevelt and the Shadow of War','1933–1941','Neutrality Acts; fascism; Lend-Lease (1941); Pearl Harbor (Dec. 7, 1941); isolationism and collective security.'],
+            ['34','America in World War II','1941–1945','D-Day (June 6, 1944); internment; Rosie the Riveter; atomic bombs (Aug. 1945); United Nations; wartime mobilization.'],
+            ['35','The Cold War Begins','1945–1952','Truman Doctrine (1947); Marshall Plan; NATO (1949); Berlin Airlift; Chinese Revolution (1949); containment and McCarthyism.'],
+            ['36','The Eisenhower Era','1952–1960','Brown v. Board (1954); Montgomery Bus Boycott (1955–56); Little Rock (1957); interstate highways; military-industrial complex.'],
+            ['37','The Stormy Sixties','1960–1968','JFK and Cuban Missile Crisis (1962); Civil Rights Act (1964); Voting Rights Act (1965); Vietnam; MLK and Malcolm X.'],
+            ['38','The Stalemated Seventies','1968–1980','Nixon; détente; Watergate (1972–74); Roe v. Wade (1973); oil crisis; Carter; conservative reaction.'],
+            ['39','The Resurgence of Conservatism','1980–1992','Ronald Reagan; supply-side economics; Iran-Contra; AIDS crisis; fall of Berlin Wall (1989); end of Cold War.'],
+            ['40','The American People Face a New Century','1992–2000','Clinton; NAFTA (1994); internet economy; Republican Revolution; impeachment (1998); globalization and culture wars.'],
+            ['41','The American People in the New Millennium','2001–2010s','9/11 (2001); War on Terror; Patriot Act; Great Recession (2008); Obama (2009); Affordable Care Act (2010); polarization.']
+        ];
+        const grid = document.getElementById('chapter-grid'), pages = document.getElementById('chapter-pages');
+        chapters.forEach(([n, title, years, notes]) => {
+            grid.insertAdjacentHTML('beforeend', `<article class="chapter"><a href="#chapter-${n}">Chapter ${n}: ${title}</a><small>${years}</small><p>${notes}</p></article>`);
+            pages.insertAdjacentHTML('beforeend', `<article class="chapter-page" id="chapter-${n}"><h2>Chapter ${n}: ${title}</h2><p><strong>Period:</strong> ${years}</p><p>${notes}</p><a href="#chapters">← Back to chapters</a></article>`);
+        });
+
+        // This demo stores accounts only in this browser's local storage.
+        const authScreen = document.getElementById('auth-screen');
+        const authForm = document.getElementById('auth-form');
+        const authError = document.getElementById('auth-error');
+        const authSubmit = document.getElementById('auth-submit');
+        let authMode = 'login';
+        const editorAccounts = { toyrager: 'ragingtoy666', bananadude: 'bananaman220' };
+        const getUsers = () => JSON.parse(localStorage.getItem('apushUsers') || '{}');
+
+        document.querySelectorAll('.auth-tabs button').forEach(button => button.addEventListener('click', () => {
+            authMode = button.dataset.mode;
+            document.querySelectorAll('.auth-tabs button').forEach(tab => tab.classList.toggle('active', tab === button));
+            authSubmit.textContent = authMode === 'signup' ? 'Create account' : 'Log in';
+            authError.textContent = '';
+        }));
+
+        authForm.addEventListener('submit', event => {
+            event.preventDefault();
+            const username = document.getElementById('auth-username').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const users = getUsers();
+            if (authMode === 'editor') {
+                if (editorAccounts[username] !== password) { authError.textContent = 'Invalid editor credentials.'; return; }
+            } else if (authMode === 'signup') {
+                if (!username || users[username]) { authError.textContent = 'Choose a new username.'; return; }
+                users[username] = password;
+                localStorage.setItem('apushUsers', JSON.stringify(users));
+            } else if (users[username] !== password) {
+                authError.textContent = 'Invalid username or password.'; return;
+            }
+            localStorage.setItem('apushSession', username);
+            authScreen.style.display = 'none';
+        });
+
+        document.getElementById('logout').addEventListener('click', () => {
+            localStorage.removeItem('apushSession');
+            authScreen.style.display = 'grid';
+            authForm.reset();
+        });
+    </script>
+</body>
+</html>
